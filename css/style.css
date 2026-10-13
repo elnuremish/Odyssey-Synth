@@ -1,0 +1,77 @@
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  overflow: hidden;
+  background: #030303;
+  color: #f4f4f4;
+  font-family: Arial, Helvetica, sans-serif;
+  user-select: none;
+  cursor: crosshair;
+}
+
+.grid {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px);
+  background-size: 50px 50px;
+}
+
+#glow {
+  position: fixed;
+  width: 500px;
+  height: 500px;
+  left: 0;
+  top: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(0);
+  background: radial-gradient(
+    circle,
+    rgba(255,255,255,.12),
+    rgba(255,255,255,0) 60%
+  );
+  transition: transform 3s cubic-bezier(.1,1,.1,1);
+}
+
+body.playing #glow {
+  transform: translate(-50%, -50%) scale(1.2);
+}
+
+#dvd {
+  position: fixed;
+  width: 140px;
+  pointer-events: none;
+}
+
+.info {
+  position: fixed;
+  left: 40px;
+  bottom: 40px;
+  max-width: 580px;
+  pointer-events: none;
+}
+
+h1 {
+  margin: 0 0 15px;
+  font-size: 20px;
+  line-height: 1;
+  letter-spacing: -.5px;
+}
+
+p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.4;
+  opacity: .8;
+}

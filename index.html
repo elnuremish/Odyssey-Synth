@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Odyssey Synth</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Фоновая сетка и свечение -->
+  <div class="grid"></div>
+  <div id="glow"></div>
+
+  <!-- Плавающий логотип -->
+  <svg id="dvd" viewBox="0 0 200 100">
+    <ellipse cx="100" cy="50" rx="90" ry="35" fill="none" stroke="#fff" stroke-width="3"/>
+    <text x="100" y="55" font-size="28" font-weight="900" text-anchor="middle" font-family="Arial, sans-serif" fill="#fff">
+      DVD
+    </text>
+  </svg>
+
+  <!-- Инструкция -->
+  <div class="info">
+    <h1>Odyssey Synth</h1>
+    <p>
+      Бас/Дрон: ЛКМ на сетке или клавиши (A-L, Z-C).<br>
+      Флейта/Лид: ПКМ на сетке или клавиши (Q-P, [, ]).
+    </p>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
