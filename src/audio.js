@@ -90,6 +90,7 @@ export class AudioEngine {
     if (siblings.length >= profile.limit) this.stop(siblings[0].id, { release: .09 });
 
     const amp = ctx.createGain();
+    amp.gain.value = 0;
     amp.connect(this.channels.get(voice));
     const note = { id, voice, index, amp, when, intensity, sources: [], nodes: [amp], tones: [], released: false };
     const target = NOTES[index] * profile.factor;
@@ -158,6 +159,10 @@ export class AudioEngine {
   }
 
   envelopeAt(note, time) {
+    if (note.releaseEnvelope && time >= note.releaseEnvelope.start) {
+      const { start, end, level } = note.releaseEnvelope;
+      return level * Math.max(0, 1 - (time - start) / (end - start));
+    }
     const profile = VOICES[note.voice], elapsed = Math.max(0, time - note.when);
     const peak = profile.level * note.intensity;
     if (elapsed < profile.attack) return peak * elapsed / profile.attack;
@@ -175,13 +180,25 @@ export class AudioEngine {
   release(note, when, duration) {
     const parameter = note.amp.gain;
     const start = Math.max(this.time, when);
+    const level = this.envelopeAt(note, start);
     if (parameter.cancelAndHoldAtTime) parameter.cancelAndHoldAtTime(start);
     else {
+      // Safari may lack cancelAndHoldAtTime. Restore the cancelled ramp's
+      // endpoint so its earlier portion does not disappear at key-up.
       parameter.cancelScheduledValues(start);
-      parameter.setValueAtTime(Math.max(.0001, this.envelopeAt(note, start)), start);
+      const profile = VOICES[note.voice];
+      if (note.releaseEnvelope || start <= note.when + profile.attack) {
+        parameter.linearRampToValueAtTime(level, start);
+      } else if (profile.sustain && start < note.when + profile.attack + profile.decay) {
+        parameter.exponentialRampToValueAtTime(level, start);
+      } else parameter.setValueAtTime(level, start);
     }
-    parameter.exponentialRampToValueAtTime(.0001, start + duration);
-    for (const source of note.sources) source.stop(start + duration + .03);
+    // A linear release also works at zero gain (an immediate key-up).
+    // Reach exact silence before stopping sources and disconnecting filters.
+    const end = start + Math.max(.015, duration);
+    parameter.linearRampToValueAtTime(0, end);
+    note.releaseEnvelope = { start, end, level };
+    for (const source of note.sources) source.stop(end + .03);
     note.released = true;
     this.active.delete(note.id);
     this.onStop(note);

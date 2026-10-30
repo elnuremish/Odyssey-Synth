@@ -72,6 +72,20 @@ test('polyphony cap and panic disconnect all oscillators, vibrato and release ta
 test('fallback release during attack does not jump to full volume', () => {
   const { engine, context } = setup(); const note = engine.start('q', 'flute', 0);
   note.amp.gain.cancelAndHoldAtTime = undefined; context.advance(.1); engine.stop('q');
-  const held = note.amp.gain.events.find(event => event.kind === 'set' && event.time === .1);
+  const held = note.amp.gain.events.find(event => event.kind === 'linear' && event.time === .1);
   assert(Math.abs(held.value - .06) < 1e-10);
+});
+
+test('immediate key-up reaches exact silence without an exponential ramp from zero', () => {
+  const { engine } = setup(); const note = engine.start('q', 'flute', 0);
+  engine.stop('q');
+  assert.deepEqual(note.amp.gain.events.at(-1), { kind: 'linear', value: 0, time: 1.5 });
+});
+test('panic during a release continues from the fading level in Safari', () => {
+  const { engine, context } = setup(); const note = engine.start('q', 'flute', 0);
+  note.amp.gain.cancelAndHoldAtTime = undefined;
+  context.advance(.5); engine.stop('q'); context.advance(1.25); engine.stopAll();
+  const held = note.amp.gain.events.find(e => e.time === 1.25);
+  assert.equal(held.kind, 'linear'); assert(Math.abs(held.value - .15) < 1e-10);
+  context.advance(2); assert.equal(engine.live.size, 0);
 });
