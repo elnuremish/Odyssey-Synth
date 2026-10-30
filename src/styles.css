@@ -1,0 +1,109 @@
+/* ИИ: Codex объединил стили после итераций с автором. README, запись №7. */
+* { box-sizing: border-box; }
+html, body { width: 100%; height: 100%; margin: 0; }
+body {
+  overflow: hidden;
+  background: #030303;
+  color: #f4f4f4;
+  font: 14px/1.4 Arial, Helvetica, sans-serif;
+  cursor: crosshair;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+button { font: inherit; color: inherit; cursor: pointer; }
+button, summary { -webkit-tap-highlight-color: transparent; }
+button:focus-visible, summary:focus-visible { outline: 1px solid #fff8; outline-offset: 3px; }
+.grid, #lights { position: fixed; inset: 0; pointer-events: none; }
+.grid {
+  background-image: linear-gradient(#ffffff0d 1px, transparent 1px), linear-gradient(90deg, #ffffff0d 1px, transparent 1px);
+  background-size: 50px 50px;
+}
+.info { position: fixed; left: 40px; bottom: 40px; max-width: 400px; z-index: 11; pointer-events: none; }
+h1 { margin: 0 0 15px; font-size: 20px; line-height: 1; letter-spacing: -.5px; }
+p { margin: 0; opacity: .8; }
+.small-controls { display: flex; align-items: center; gap: 13px; margin-top: 9px; }
+#motif {
+  pointer-events: auto; appearance: none; border: 0; background: none;
+  padding: 5px 0; font-size: 12px; letter-spacing: .15px; opacity: .75;
+}
+#motif:hover, #motif.on { opacity: 1; }
+#mixer { position: relative; pointer-events: auto; }
+#mixer summary { display: flex; align-items: center; justify-content: center; width: 25px; height: 25px; color: #fff8; cursor: pointer; list-style: none; }
+#mixer summary::-webkit-details-marker { display: none; }
+#mixer summary:hover, #mixer[open] summary { color: #fff; }
+.mixer-panel { position: absolute; bottom: 35px; left: 0; width: 235px; padding: 15px; background: #0b0b0bf5; border: 1px solid #ffffff25; box-shadow: 0 5px 24px #0008; }
+.mixer-panel label { display: flex; align-items: center; gap: 10px; height: 30px; font-size: 11px; color: #bbb; }
+.mixer-panel input { width: 115px; margin-left: auto; accent-color: #c6c6c6; cursor: pointer; touch-action: auto; }
+.mixer-panel output { width: 24px; text-align: right; color: #777; font-size: 10px; }
+.keyboard { position: fixed; right: 40px; bottom: 40px; display: flex; flex-direction: column; gap: 5px; width: 560px; z-index: 10; }
+.voice-row { display: flex; align-items: center; gap: 4px; --tone: 220,220,220; }
+.voice-name { appearance: none; flex: 0 0 57px; text-align: left; border: 0; padding: 0; background: none; color: rgb(var(--tone)); font-size: 9px; opacity: .75; letter-spacing: .25px; }
+.voice-name:hover { opacity: 1; }
+.key {
+  display: flex; align-items: center; justify-content: center;
+  flex: 1; min-width: 0; max-width: 32px; height: 27px; padding: 0;
+  border: 1px solid rgba(var(--tone), .27); border-radius: 0;
+  color: rgba(var(--tone), .8); background: rgba(var(--tone), .025);
+  font-size: 11px; font-weight: 600; touch-action: none;
+  transition: background .08s, color .08s, border-color .08s, box-shadow .12s;
+}
+.key:hover { border-color: rgba(var(--tone), .7); }
+.key.suggested { border-color: rgba(var(--tone), .73); background: rgba(var(--tone), .08); }
+.key.active { background: rgb(var(--tone)); color: #080808; border-color: rgb(var(--tone)); box-shadow: 0 0 14px rgba(var(--tone), .22); }
+.row-note { min-width: 27px; margin-left: auto; text-align: right; font-size: 9px; color: rgba(var(--tone), .45); }
+.note-light {
+  position: absolute; width: 500px; height: 500px; transform: translate(-50%, -50%);
+  opacity: 0; transition: opacity .35s;
+  background: radial-gradient(circle, rgba(var(--tone), .14), rgba(var(--tone), 0) 60%);
+}
+.note-light.on { opacity: 1; }
+.note-light.out { animation: light-out 1.6s forwards; }
+.note-light::after { content: ''; position: absolute; left: 50%; top: 50%; width: 9px; height: 9px; border: 1px solid rgba(var(--tone), .7); border-radius: 50%; transform: translate(-50%, -50%); box-shadow: 0 0 18px #ffffff28; }
+.note-light.flute::after { width: 5px; height: 5px; background: #fff8; }
+.note-light.vocal::after { width: 7px; height: 7px; border-radius: 0; transform: translate(-50%, -50%) rotate(45deg); }
+.note-light.choir::after { width: 20px; height: 20px; border-color: rgba(var(--tone), .4); }
+.note-light.viola::after { width: 11px; height: 4px; border-radius: 0; }
+@keyframes light-out { from { opacity: 1; } to { opacity: 0; } }
+#traveler { position: fixed; left: 0; top: 0; width: 106px; height: 119px; padding: 5px 7px; border: 0; background: none; z-index: 4; touch-action: manipulation; }
+.sprite {
+  --size: 84px; --character: 0; --frame: 0; --direction: 1;
+  display: block; width: var(--size); height: var(--size); margin: 0 auto;
+  background-image: url('../assets/characters.png');
+  background-size: calc(var(--size) * 10) calc(var(--size) * 8);
+  background-position: calc(var(--character) * var(--size) * -1) calc(var(--frame) * var(--size) * -1);
+  image-rendering: pixelated; opacity: .77;
+  transform: scaleX(var(--direction)); transition: opacity .15s;
+}
+.traveler-name { display: block; margin-top: 9px; text-align: center; font: 8px/1.2 Arial, sans-serif; letter-spacing: 1.4px; opacity: .3; }
+#traveler:hover .sprite, .sprite.listening { opacity: 1; }
+#traveler:hover .traveler-name { opacity: .7; }
+.sprite.impact { animation: pixel-impact .3s steps(3, end); }
+@keyframes pixel-impact {
+  0% { transform: scale(calc(var(--direction) * .85), 1.12); opacity: 1; }
+  35% { transform: translateX(4px) scaleX(var(--direction)); opacity: .25; }
+  70% { transform: translateX(-3px) scaleX(var(--direction)); opacity: 1; }
+}
+@media (min-width: 981px) and (max-width: 1100px) { .info { bottom: 235px; } }
+@media (max-width: 980px) {
+  .keyboard { left: 40px; right: auto; bottom: 190px; width: min(560px, calc(100vw - 80px)); }
+  .key { height: 25px; font-size: 10px; }
+}
+@media (max-width: 600px) {
+  .info { left: 20px; bottom: 20px; max-width: calc(100vw - 40px); }
+  h1 { font-size: 18px; margin-bottom: 10px; }
+  .info p { font-size: 11px; line-height: 1.6; }
+  #motif { font-size: 11px; }
+  .keyboard { left: 20px; right: 20px; bottom: 170px; width: auto; }
+  .voice-row { gap: 3px; }
+  .voice-name { flex-basis: 44px; font-size: 8px; }
+  .key { max-width: none; font-size: 8px; }
+  .row-note { display: none; }
+  .mixer-panel { left: -110px; }
+  #traveler { width: 86px; height: 101px; }
+  .sprite { --size: 66px; }
+  .traveler-name { font-size: 7px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}

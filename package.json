@@ -1,0 +1,13 @@
+{
+  "name": "odyssey-synth",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Minimal browser synthesizer inspired by the Odyssey",
+  "scripts": {
+    "start": "node scripts/serve.mjs",
+    "build": "node scripts/build.mjs",
+    "test": "node --test tests/*.test.js"
+  },
+  "engines": { "node": ">=22" }
+}
